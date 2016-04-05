@@ -48,7 +48,7 @@ int main()
 			sum = 0; double sum2 = 0;
 			for(int i = 0; i < N; i++){
 				sum += alpha[i][t-1] * hmm_initial.transition[i][j];
-				sum2 += hmm_initial.transition[j][i] * hmm_initial.observation[data[t]-65][i] * beta[i][t+1];
+				sum2 += hmm_initial.transition[j][i] * hmm_initial.observation[data[data.length()-t]-65][i] * beta[i][data.length()-t];
 			}
 			double tmp = sum * hmm_initial.observation[data[t]-65][j];
 			alpha[t][j] = tmp;
