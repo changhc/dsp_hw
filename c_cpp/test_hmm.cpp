@@ -63,12 +63,14 @@ int main()
 		for(int i = 0; i < N; i++){
 			gamma[t][i] = alpha[t][i] * beta[t][i] / sum;
 		}
+		cout<<sum<<endl;
 		sum = 0;
 		for(int j = 0; j < N; j++){
 			for(int i = 0; i < N; i++){
 				sum += alpha[t-1][i] * hmm_initial.transition[i][j] * hmm_initial.observation[data[t]-65][j] * beta[t][j];
 			}
 		}
+		//cout<<sum<<endl;
 		for(int j = 0; j < N; j++){
 			for(int i = 0; i < N; i++){
 				epsilon[t-1][i][j] = alpha[t-1][i] * hmm_initial.transition[i][j] * hmm_initial.observation[data[t]-65][j] * beta[t][j] / sum;
