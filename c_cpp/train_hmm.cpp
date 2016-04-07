@@ -8,11 +8,6 @@
 using namespace std;
 int main(int argc, char* argv[])
 {
-
-	HMM hmms[5];
-	load_models( argv[1], hmms, 5);
-	dump_models( hmms, 5);
-	
 	//pi = hmm->initial[], A = hmm->transition[][], B = hmm->observation[][]
 	HMM hmm_initial;
 	loadHMM( &hmm_initial, argv[2] );

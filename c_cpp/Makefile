@@ -1,4 +1,4 @@
-all: train test
+all: train test acc
 
 train:	train_hmm.o
 	g++ -o train train_hmm.o
@@ -9,6 +9,10 @@ test:	test_hmm.o
 	g++ -o test test_hmm.o
 test_hmm.o: test_hmm.cpp hmm.h
 	g++ -c test_hmm.cpp
+acc:	acc.o
+	g++ -o acc acc.o
+acc.o: acc.cpp
+	g++ -c acc.cpp
 
 clean:
-	rm train_hmm.o test_hmm.o  # type make clean to remove the compiled file
+	rm train_hmm.o test_hmm.o acc.o # type make clean to remove the compiled file
