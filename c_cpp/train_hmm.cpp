@@ -13,11 +13,11 @@ void init_sum(void);
 int main(int argc, char* argv[])
 {
 	//pi = hmm->initial[], A = hmm->transition[][], B = hmm->observation[][]
-	HMM hmm_initial;
-	loadHMM( &hmm_initial, argv[2] );
-	//dumpHMM( stderr, &hmm_initial );
+	HMM hmm;
+	loadHMM( &hmm, argv[2] );
+	//dumpHMM( stderr, &hmm );
 	string data;
-	int N = hmm_initial.state_num, observN = hmm_initial.observ_num;
+	int N = hmm.state_num, observN = hmm.observ_num;
 	int iter;
 	string n(argv[1]);
 	stringstream ss;
@@ -31,17 +31,17 @@ int main(int argc, char* argv[])
 			init();
 			double sum = 0;
 			for(int i = 0; i < N; i++){
-				alpha[0][i] = hmm_initial.initial[i] * hmm_initial.observation[data[0]-65][i];
+				alpha[0][i] = hmm.initial[i] * hmm.observation[data[0]-65][i];
 				beta[data.length()-1][i] = 1.0;
 			}
 			for(int t = 1; t < data.length(); t++){  
 				for(int j = 0; j < N; j++){
 					sum = 0; double sum2 = 0;
 					for(int i = 0; i < N; i++){
-						sum += alpha[t-1][i] * hmm_initial.transition[i][j];
-						sum2 += hmm_initial.transition[j][i] * hmm_initial.observation[data[data.length()-t]-65][i] * beta[data.length()-t][i];
+						sum += alpha[t-1][i] * hmm.transition[i][j];
+						sum2 += hmm.transition[j][i] * hmm.observation[data[data.length()-t]-65][i] * beta[data.length()-t][i];
 					}
-					alpha[t][j] = sum * hmm_initial.observation[data[t]-65][j];
+					alpha[t][j] = sum * hmm.observation[data[t]-65][j];
 					beta[data.length()-1-t][j] = sum2;
 				}
 			}
@@ -59,14 +59,14 @@ int main(int argc, char* argv[])
 				sum = 0;
 				for(int i = 0; i < N; i++){
 					for(int j = 0; j < N; j++){
-						sum += alpha[t-1][i] * hmm_initial.transition[i][j] * hmm_initial.observation[data[t]-65][j] * beta[t][j];
+						sum += alpha[t-1][i] * hmm.transition[i][j] * hmm.observation[data[t]-65][j] * beta[t][j];
 					}
 				}
 				//cout<<sum<<endl;
 				
 				for(int i = 0; i < N; i++){
 					for(int j = 0; j < N; j++){
-						epsilon[t-1][i][j] = alpha[t-1][i] * hmm_initial.transition[i][j] * hmm_initial.observation[data[t]-65][j] * beta[t][j] / sum;
+						epsilon[t-1][i][j] = alpha[t-1][i] * hmm.transition[i][j] * hmm.observation[data[t]-65][j] * beta[t][j] / sum;
 					}
 				}
 			}
@@ -92,43 +92,43 @@ int main(int argc, char* argv[])
 		for(int i = 0; i < N; i++){
 			double tmp = 0;
 			for(int j = 0; j < observN; j++){
-				tmp += sum_g[i][j];
+				tmp += sum_g[j][i];
 			}
 			tmp -= sum_gm1[i];
 			for(int j = 0; j < N; j++){
-				hmm_initial.transition[i][j] = sum_e[i][j] / tmp;
-				//hmm_initial.observation[i][j] = sum_gcond[i][j] / sum_g[i];
+				hmm.transition[i][j] = sum_e[i][j] / tmp;
+				//hmm.observation[i][j] = sum_gcond[i][j] / sum_g[i];
 			}
-			hmm_initial.initial[i] = sum_pi[i] / count;
+			hmm.initial[i] = sum_pi[i] / count;
 		}
-		for(int i = 0; i < hmm_initial.observ_num; i++){
+		for(int i = 0; i < N; i++){
 			double tmp = 0;
-			for(int j = 0; j < N; j++)
-				tmp += sum_g[i][j];
-			for(int j = 0; j < N; j++){
-				hmm_initial.observation[i][j] = sum_g[i][j] / tmp;
+			for(int j = 0; j < observN; j++)
+				tmp += sum_g[j][i];
+			for(int j = 0; j < observN; j++){
+				hmm.observation[j][i] = sum_g[j][i] / tmp;
 			}
 		}
 	}
 	
-	//dumpHMM(stderr, &hmm_initial);
+	//dumpHMM(stderr, &hmm);
 	fstream file;
 	file.open(argv[4], ios::out);
 	file << "initial: " << N << endl;
-	for(int i = 0; i < N; i++) file << hmm_initial.initial[i] << ' ';
+	for(int i = 0; i < N; i++) file << hmm.initial[i] << ' ';
 	file << endl << endl;
 	file << "transition: " << N << endl;
 	for(int i = 0; i < N; i++){
 		for(int j = 0; j < N; j++){
-			file << hmm_initial.transition[i][j] << ' ';
+			file << hmm.transition[i][j] << ' ';
 		}
 		file << endl;
 	}
 	file << endl;
-	file << "observation: " << hmm_initial.observ_num << endl;
-	for(int i = 0; i < hmm_initial.observ_num; i++){
+	file << "observation: " << hmm.observ_num << endl;
+	for(int i = 0; i < hmm.observ_num; i++){
 		for(int j = 0; j < N; j++){
-			file << hmm_initial.observation[i][j] << ' ';
+			file << hmm.observation[i][j] << ' ';
 		}
 		file << endl; 
 	}
