@@ -14,7 +14,6 @@ int main(int argc, char* argv[])
 	//dumpHMM( stderr, &hmm_initial );
 	string data;
 	int N = hmm_initial.state_num, observN = hmm_initial.observ_num;
-	double sum_e[N][N] = {0}, sum_g[N] = {0}, sum_gcond[observN][N] = {0}, sum_gm1[N] = {0}, sum_pi[N] = {0};
 	int iter;
 	string n(argv[1]);
 	stringstream ss;
@@ -22,6 +21,7 @@ int main(int argc, char* argv[])
 	for(int x = 0; x < iter; x++){
 		int count = 0;
 		fstream file(argv[3]);
+		double sum_e[N][N] = {0}, sum_g[N] = {0}, sum_gcond[observN][N] = {0}, sum_gm1[N] = {0}, sum_pi[N] = {0};
 		while(file >> data){
 			count++;
 			double alpha[data.length()][N], beta[data.length()][N], epsilon[data.length()][N][N], gamma[data.length()][N];
@@ -41,11 +41,10 @@ int main(int argc, char* argv[])
 					beta[data.length()-1-t][j] = sum2;
 				}
 			}
-			//gamma
 			for(int t = 0; t < data.length(); t++){
 				sum = 0;
 				for(int i = 0; i < N; i++){
-					sum += alpha[t][i] * beta[t][i];	//P(O|lambda)
+					sum += alpha[t][i] * beta[t][i];
 				}
 				for(int i = 0; i < N; i++){
 					gamma[t][i] = alpha[t][i] * beta[t][i] / sum;
@@ -55,22 +54,21 @@ int main(int argc, char* argv[])
 				sum = 0;
 				for(int j = 0; j < N; j++){
 					for(int i = 0; i < N; i++){
-						sum += alpha[t-1][i] * hmm_initial.transition[i][j] * hmm_initial.observation[data[t]-65][j] * beta[t][j];
+						sum += alpha[t-1][i] * hmm_initial.transition[j][i] * hmm_initial.observation[data[t]-65][j] * beta[t][j];
 					}
 				}
 				//cout<<sum<<endl;
-				
 				for(int j = 0; j < N; j++){
 					for(int i = 0; i < N; i++){
-						epsilon[t-1][i][j] = alpha[t-1][i] * hmm_initial.transition[i][j] * hmm_initial.observation[data[t]-65][j] * beta[t][j] / sum;
+						epsilon[t-1][i][j] = alpha[t-1][i] * hmm_initial.transition[j][i] * hmm_initial.observation[data[t]-65][j] * beta[t][j] / sum;
 					}
 				}
 			}
 
 			//iteration result
 			for(int i = 0; i < N; i++){
-				for(int j = 0; j < N; j++){
-					for(int t = 0; t < data.length(); t++){
+				for(int t = 0; t < data.length(); t++){
+					for(int j = 0; j < N; j++){
 						if((data[t]-65) == i) sum_gcond[i][j] += gamma[t][i];
 						if(j == 0) sum_g[i] += gamma[t][i];
 						if(t == data.length()-1) continue;
@@ -94,7 +92,11 @@ int main(int argc, char* argv[])
 				hmm_initial.observation[i][j] = sum_gcond[i][j] / sum_g[j];
 			}
 		}
+		//double aaa = 0;
+		//for(int i=0; i< N; i++) aaa+=hmm_initial.initial[i];
+		//cout<<aaa<<endl;
 	}
+	
 	
 	//dumpHMM(stderr, &hmm_initial);
 	fstream file;
