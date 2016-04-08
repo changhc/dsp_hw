@@ -1,190 +1,163 @@
 #include "hmm.h"
-#include <math.h>
-#include <string.h>
-#include <cstdlib>
-#include <cstdio>
-
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
 using namespace std;
-
-#define MAX_NUM_MODEL 10
-
-double alpha[MAX_SEQ][MAX_STATE];
-double beta[MAX_SEQ][MAX_STATE];
-double gam[MAX_SEQ][MAX_STATE];
-double epsilon[MAX_SEQ][MAX_STATE][MAX_STATE];
-double pi[MAX_STATE];
-double sum_gam[MAX_STATE][MAX_OBSERV];
-double sum_gam_tail[MAX_STATE];
-double sum_epsilon[MAX_STATE][MAX_STATE];
-
+double alpha[MAX_LINE][MAX_STATE], beta[MAX_LINE][MAX_STATE], epsilon[MAX_LINE][MAX_STATE][MAX_STATE], gam[MAX_LINE][MAX_STATE];
+double sum_e[MAX_STATE][MAX_STATE], sum_g[MAX_OBSERV][MAX_STATE], sum_gm1[MAX_STATE], sum_pi[MAX_STATE];
+void init(void);
+void init_sum(void);
 int main(int argc, char* argv[])
 {
-    HMM model;
-    int num_models = 0;
-    char line[2000];
-    int T, N, K = 0;
+	//pi = hmm->initial[], A = hmm->transition[][], B = hmm->observation[][]
+	HMM hmm_initial;
+	loadHMM( &hmm_initial, argv[2] );
+	//dumpHMM( stderr, &hmm_initial );
+	string data;
+	int N = hmm_initial.state_num, observN = hmm_initial.observ_num;
+	int iter;
+	string n(argv[1]);
+	stringstream ss;
+	ss << n; ss >> iter; //cout<<iter<<endl;
+	for(int x = 0; x < iter; x++){
+		int count = 0;
+        init_sum();
+		fstream file(argv[3]);
+		while(file >> data){
+			count++;
+			init();
+			double sum = 0;
+			for(int i = 0; i < N; i++){
+				alpha[0][i] = hmm_initial.initial[i] * hmm_initial.observation[data[0]-65][i];
+				beta[data.length()-1][i] = 1.0;
+			}
+			for(int t = 1; t < data.length(); t++){  
+				for(int j = 0; j < N; j++){
+					sum = 0; double sum2 = 0;
+					for(int i = 0; i < N; i++){
+						sum += alpha[t-1][i] * hmm_initial.transition[i][j];
+						sum2 += hmm_initial.transition[j][i] * hmm_initial.observation[data[data.length()-t]-65][i] * beta[data.length()-t][i];
+					}
+					alpha[t][j] = sum * hmm_initial.observation[data[t]-65][j];
+					beta[data.length()-1-t][j] = sum2;
+				}
+			}
+			//gamma
+			for(int t = 0; t < data.length(); t++){
+				sum = 0;
+				for(int i = 0; i < N; i++){
+					sum += alpha[t][i] * beta[t][i];	//P(O|lambda)
+				}
+				for(int i = 0; i < N; i++){
+					gam[t][i] = alpha[t][i] * beta[t][i] / sum;
+				}
+				//cout<<sum<<endl;
+				if(t == 0) continue;
+				sum = 0;
+				for(int i = 0; i < N; i++){
+					for(int j = 0; j < N; j++){
+						sum += alpha[t-1][i] * hmm_initial.transition[i][j] * hmm_initial.observation[data[t]-65][j] * beta[t][j];
+					}
+				}
+				//cout<<sum<<endl;
+				
+				for(int i = 0; i < N; i++){
+					for(int j = 0; j < N; j++){
+						epsilon[t-1][i][j] = alpha[t-1][i] * hmm_initial.transition[i][j] * hmm_initial.observation[data[t]-65][j] * beta[t][j] / sum;
+					}
+				}
+			}
+			for (int i = 0; i < N; i++){	//gamma
+			    for (int t = 0; t < data.length(); t++){
+			        sum_g[data[t]-65][i] += gam[t][i];
+			    }
+			    sum_gm1[i] += gam[data.length()-1][i];
+			    sum_pi[i] = sum_pi[i] + gam[0][i];
+			}
 
-    //check input 
-    if(argc != 5)
-    {
-        fprintf(stderr, "error input\n");
-        exit(1);
-    }
-
-    FILE *seq_model = open_or_die(argv[3], "r");
-    FILE *result_model = open_or_die(argv[4], "w+");
-
-    // Initialize from arguments
-    int num_iterations = strtol(argv[1], NULL, 10);
-    loadHMM(&model, argv[2]);
-
-    N = model.state_num;
-
-    // Process 
-    for(int num_it = 0; num_it < num_iterations; ++num_it)
-    {
-        rewind(seq_model);
-        K = 0;
-        for (int i = 0; i < N; ++i) 
-        {
-            pi[i] = sum_gam_tail[i] = 0;
-            for (int j = 0; j < N; ++j)
-                sum_epsilon[i][j] = 0;
-            for (int j = 0; j < model.observ_num; ++j)
-                sum_gam[i][j] = 0;
-        }
-
-        while(fscanf(seq_model, "%s", line) != EOF)
-        {
-            T = strlen(line);
-
-            /* Forward Algorithm */
-            for(int i = 0; i < N; i++) // initialization
-                alpha[0][i] = model.initial[i] * model.observation[line[0] - 'A'][i];
-            
-            for(int t = 1; t < T; t++) // induction 
-            {
-                for(int j = 0; j < N; j++)
-                {
-                    double sum = 0;
-                    for(int i = 0; i < N; i++)
-                        sum += alpha[t-1][i] * model.transition[i][j];
-                    
-                    
-                    alpha[t][j] = sum * model.observation[line[t] - 'A'][j];
-                }
-            }
-
-
-            /* Backward Algorithm */
-            for(int i = 0; i < N; i++) // initialization 
-                beta[T - 1][i]=1;
-        
-            for(int t = T - 2; t >= 0; t--)    // induction 
-            {
-                for(int i = 0; i < N; i++)
-                {
-                    beta[t][i]=0;
-                    for(int j = 0; j < N; j++)
-                    {
-                        beta[t][i] += model.transition[i][j] * model.observation[line[t + 1]-'A'][j]
-                                   * beta[t + 1][j];
-                    }
-                }
-            }
-            
-
-            /* gam */
-            for(int t = 0; t < T; t++)
-            {
-                double sum = 0;
-                for(int i = 0; i < N; i++)
-                    sum += alpha[t][i] * beta[t][i];
-                
-                for(int i = 0; i < N; i++)
-                    gam[t][i] = alpha[t][i] * beta[t][i]/sum;
-            }
-
-
-            /* Epsilon */
-            for(int t = 0; t < T - 1; t++)
-            {
-                double sum = 0;
-                for(int i = 0; i < N; i++)
-                    for(int j = 0; j < N; j++)                   
-                        sum += alpha[t][i] * model.transition[i][j] *
-                                model.observation[line[t + 1]-'A'][j] * beta[t + 1][j];
-
-                for(int i = 0; i < N; i++)
-                    for(int j = 0; j < N; j++)
-                    {
-                        epsilon[t][i][j] = alpha[t][i] * model.transition[i][j]
-                                           * model.observation[line[t + 1] - 'A'][j]
-                                           * beta[t + 1][j] / sum;
-                    }
-            }
-
-            for (int i = 0; i < N; ++i)
-                pi[i] += gam[0][i];
-
-
-            /* Accumulate */
-            for (int i = 0; i < N; ++i) // gam
-            {
-                for (int t = 0; t < T; ++t) 
-                {
-                    sum_gam[i][line[t] - 'A'] += gam[t][i];
-                }
-                sum_gam_tail[i] += gam[T - 1][i];
-            }
-
-            for (int i = 0; i < N; ++i)
-                for (int j = 0; j < N; ++j) 
-                {
-                    double sum = 0;
-                    for (int t = 0; t < T - 1; ++t)
+			for (int i = 0; i < N; i++)
+			    for (int j = 0; j < N; j++) 
+			    {
+			        double sum = 0;
+                    for (int t = 0; t < data.length() - 1; ++t)
                         sum += epsilon[t][i][j];
 
-                    sum_epsilon[i][j] += sum;
-                }
-            
-            K++;
-        }
+                    sum_e[i][j] += sum;
+			    }
+		}
+		file.close();
+		for(int i = 0; i < N; i++){
+			double tmp = 0;
+			for(int j = 0; j < observN; j++){
+				tmp += sum_g[i][j];
+			}
+			tmp -= sum_gm1[i];
+			for(int j = 0; j < N; j++){
+				hmm_initial.transition[i][j] = sum_e[i][j] / tmp;
+				//hmm_initial.observation[i][j] = sum_gcond[i][j] / sum_g[i];
+			}
+			hmm_initial.initial[i] = sum_pi[i] / count;
+		}
+		for(int i = 0; i < hmm_initial.observ_num; i++){
+			double tmp = 0;
+			for(int j = 0; j < N; j++)
+				tmp += sum_g[i][j];
+			for(int j = 0; j < N; j++){
+				hmm_initial.observation[i][j] = sum_g[i][j] / tmp;
+			}
+		}
+	}
+	
+	//dumpHMM(stderr, &hmm_initial);
+	fstream file;
+	file.open(argv[4], ios::out);
+	file << "initial: " << N << endl;
+	for(int i = 0; i < N; i++) file << hmm_initial.initial[i] << ' ';
+	file << endl << endl;
+	file << "transition: " << N << endl;
+	for(int i = 0; i < N; i++){
+		for(int j = 0; j < N; j++){
+			file << hmm_initial.transition[i][j] << ' ';
+		}
+		file << endl;
+	}
+	file << endl;
+	file << "observation: " << hmm_initial.observ_num << endl;
+	for(int i = 0; i < hmm_initial.observ_num; i++){
+		for(int j = 0; j < N; j++){
+			file << hmm_initial.observation[i][j] << ' ';
+		}
+		file << endl; 
+	}
+	file.close();
+	//printf("%f\n", log(1.5) ); // make sure the math library is included
+	return 0;
+}
 
-        /* Model */ 
-        /*initial*/
-        for (int i = 0; i < N; ++i)
-            model.initial[i] = pi[i] / K;
-
-        /*transition*/
-        for (int i = 0; i < N; ++i) 
-        {
-            double sum = 0;
-
-            for (int j = 0; j < model.observ_num; ++j)
-                sum += sum_gam[i][j];
-            sum -= sum_gam_tail[i];
-            
-            for (int j = 0; j < N; ++j)
-                model.transition[i][j] = sum_epsilon[i][j] / sum;
-        }
-
-        /*observation*/
-        for (int i = 0; i < N; ++i) 
-        {
-            double sum = 0;
-
-            for (int j = 0; j < model.observ_num; ++j)
-                sum += sum_gam[i][j];
-
-            for (int j = 0; j < model.observ_num; ++j)
-                model.observation[j][i] = sum_gam[i][j] / sum;
-        }   
-
-
-    }
-
-    dumpHMM(result_model, &model);
-
-    fclose(result_model);
+void init(void){
+	for(int i = 0; i < MAX_LINE; i++){
+		for(int j = 0; j < MAX_STATE; j++){
+			alpha[i][j] = 0.0;
+			beta[i][j] = 0.0;
+			gam[i][j] = 0.0;
+			for(int t = 0; t < MAX_STATE; t++)
+				epsilon[j][i][t] = 0.0;
+		}
+	}
+}
+void init_sum(void){
+	for(int i = 0; i < MAX_STATE; i++){
+		for(int j = 0; j < MAX_STATE; j++){
+			sum_e[i][j] = 0.0;
+		}
+		
+		sum_gm1[i] = 0.0;
+		sum_pi[i] = 0.0;
+		for(int j = 0; j < MAX_OBSERV; j++){
+			sum_g[j][i] = 0.0;
+		}
+	}	
 }

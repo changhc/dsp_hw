@@ -1,5 +1,5 @@
 #!/bin/bash
-for ((i = 5; i<= 5; i=i+1))
+for ((i = 1; i<= 1; i=i+1))
 do
 	./train ${i} model_init.txt seq_model_01.txt model_01.txt
 	./train ${i} model_init.txt seq_model_02.txt model_02.txt
