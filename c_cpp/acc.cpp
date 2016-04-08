@@ -1,5 +1,6 @@
 #include <string>
 #include <fstream>
+#include <iostream>
 using namespace std;
 #ifndef MAX_LINE
 #	define MAX_LINE 	256
@@ -17,5 +18,6 @@ int main(){
 	test.open("acc.txt", ios::out);
 	test << correct/count;
 	test.close();
+	cout<<correct/count<<endl;
 	return 0;
 }

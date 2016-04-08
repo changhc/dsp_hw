@@ -4,11 +4,11 @@ train:	train_hmm.o
 	g++ -o train train_hmm.o
 # type make/make all to compile test_hmm
 train_hmm.o: train_hmm.cpp hmm.h
-	g++ -c train_hmm.cpp
+	g++ -c -Wall train_hmm.cpp
 test:	test_hmm.o
 	g++ -o test test_hmm.o
 test_hmm.o: test_hmm.cpp hmm.h
-	g++ -c test_hmm.cpp
+	g++ -c -Wall test_hmm.cpp
 acc:	acc.o
 	g++ -o acc acc.o
 acc.o: acc.cpp

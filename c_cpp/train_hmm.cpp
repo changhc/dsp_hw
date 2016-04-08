@@ -11,14 +11,14 @@ int main(int argc, char* argv[])
 	//pi = hmm->initial[], A = hmm->transition[][], B = hmm->observation[][]
 	HMM hmm_initial;
 	loadHMM( &hmm_initial, argv[2] );
-	dumpHMM( stderr, &hmm_initial );
+	//dumpHMM( stderr, &hmm_initial );
 	string data;
 	int N = hmm_initial.state_num, observN = hmm_initial.observ_num;
 	double sum_e[N][N] = {0}, sum_g[N] = {0}, sum_gcond[observN][N] = {0}, sum_gm1[N] = {0}, sum_pi[N] = {0};
 	int count = 0, iter;
 	string n(argv[1]);
 	stringstream ss;
-	ss << n; ss >> iter; cout<<iter<<endl;
+	ss << n; ss >> iter; //cout<<iter<<endl;
 	for(int x = 0; x < iter; x++){
 		fstream file(argv[3]);
 		while(file >> data){
@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 				for(int j = 0; j < N; j++){
 					sum = 0; double sum2 = 0;
 					for(int i = 0; i < N; i++){
-						sum += alpha[i][t-1] * hmm_initial.transition[i][j];
+						sum += alpha[t-1][i] * hmm_initial.transition[i][j];
 						sum2 += hmm_initial.transition[j][i] * hmm_initial.observation[data[data.length()-t]-65][i] * beta[data.length()-t][i];
 					}
 					alpha[t][j] = sum * hmm_initial.observation[data[t]-65][j];
@@ -79,20 +79,24 @@ int main(int argc, char* argv[])
 			}
 		}
 		file.close();
+		for(int i = 0; i < N; i++){
+			for(int j = 0; j < N; j++){
+				hmm_initial.transition[i][j] = sum_e[i][j] / sum_gm1[i];
+				//hmm_initial.observation[i][j] = sum_gcond[i][j] / sum_g[i];
+			}
+			hmm_initial.initial[i] = sum_pi[i] / count;
+		}
+		for(int i = 0; i < hmm_initial.observ_num; i++){
+			for(int j = 0; j < N; j++){
+				hmm_initial.observation[i][j] = sum_gcond[i][j] / sum_g[j];
+			}
+		}
+		double aaa = 0;
+		//for(int i=0; i< N; i++) aaa+=hmm_initial.initial[i];
+		//cout<<aaa<<endl;
 	}
 	
-	for(int i = 0; i < N; i++){
-		for(int j = 0; j < N; j++){
-			hmm_initial.transition[i][j] = sum_e[i][j] / sum_gm1[i];
-			//hmm_initial.observation[i][j] = sum_gcond[i][j] / sum_g[i];
-		}
-		hmm_initial.initial[i] = sum_pi[i] / count;
-	}
-	for(int i = 0; i < hmm_initial.observ_num; i++){
-		for(int j = 0; j < N; j++){
-			hmm_initial.observation[i][j] = sum_gcond[i][j] / sum_g[j];
-		}
-	}
+	
 	dumpHMM(stderr, &hmm_initial);
 	fstream file;
 	file.open(argv[4], ios::out);
@@ -115,6 +119,6 @@ int main(int argc, char* argv[])
 		file << endl;
 	}
 	file.close();
-	printf("%f\n", log(1.5) ); // make sure the math library is included
+	//printf("%f\n", log(1.5) ); // make sure the math library is included
 	return 0;
 }

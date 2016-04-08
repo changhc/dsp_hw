@@ -1,0 +1,29 @@
+#!/bin/bash
+for ((i = 1; i<= 2; i=i+1))
+do
+	./train ${i} model_init.txt seq_model_01.txt model_01.txt
+	./train ${i} model_init.txt seq_model_02.txt model_02.txt
+	./train ${i} model_init.txt seq_model_03.txt model_03.txt
+	./train ${i} model_init.txt seq_model_04.txt model_04.txt
+	./train ${i} model_init.txt seq_model_05.txt model_05.txt
+	./test modellist.txt testing_data1.txt result.txt
+	./acc
+done
+
+#for ((i = 15; i<= 100; i=i+5))
+#do
+	#train ${i} model_init.txt seq_model_01.txt model_01.txt
+	#train ${i} model_init.txt seq_model_02.txt model_02.txt
+	#train ${i} model_init.txt seq_model_03.txt model_03.txt
+	#train ${i} model_init.txt seq_model_04.txt model_04.txt
+	#train ${i} model_init.txt seq_model_05.txt model_05.txt
+#done
+#for ((i = 150; i<= 1000; i=i+50))
+#do
+	#train ${i} model_init.txt seq_model_01.txt model_01.txt
+	#train ${i} model_init.txt seq_model_02.txt model_02.txt
+	#train ${i} model_init.txt seq_model_03.txt model_03.txt
+	#train ${i} model_init.txt seq_model_04.txt model_04.txt
+	#train ${i} model_init.txt seq_model_05.txt model_05.txt
+#done
+

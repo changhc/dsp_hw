@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 
 	HMM hmms[5];
 	load_models( argv[1], hmms, 5);
-	dump_models( hmms, 5);
+	//dump_models( hmms, 5);
 	
 	//pi = hmm->initial[], A = hmm->transition[][], B = hmm->observation[][]
 	fstream file(argv[2]), output(argv[3], ios::out);
@@ -47,6 +47,6 @@ int main(int argc, char* argv[])
 	}
 	file.close();
 	output.close();
-	printf("%f\n", log(1.5) ); // make sure the math library is included
+	//printf("%f\n", log(1.5) ); // make sure the math library is included
 	return 0;
 }
