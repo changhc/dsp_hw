@@ -1,0 +1,50 @@
+<s> £§£µ£¿ £y£«¡Å <unk> <unk> </s>
+<s> £¤£¾ <unk> <unk> <unk> £x£¹£¿ £t£¸£®£½ £¨£¯£¿ <unk> <unk> £{£­£»/£{£¸£±£¾ </s>
+<s> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> </s>
+<s> <unk> <unk> £z£¸£³£½ </s>
+<s> <unk> £¡£¸£µ¡Å/£¡£¸£µ£¿ <unk> <unk> <unk> <unk> <unk> </s>
+<s> <unk> <unk> £~£¹£«£¿ <unk> <unk> </s>
+<s> <unk> <unk> £¢£º£³¡Å £¸£¶£¾ £¦£¿ <unk> <unk> £¦£¿ <unk> <unk> <unk> <unk> <unk> </s>
+<s> £x£¹£¬¡Å <unk> <unk> £t£¹£¿/£t£¹£½ £x£«£¿ </s>
+<s> £x£³£¿ <unk> £x£²¡Å/£x£¹¡Å <unk> <unk> <unk> <unk> </s>
+<s> <unk> £º£®£¿ £y£¸£¶¡Å <unk> <unk> <unk> <unk> <unk> <unk> </s>
+<s> <unk> <unk> <unk> <unk> <unk> </s>
+<s> <unk> £¨£¯£¿ <unk> <unk> <unk> <unk> £¡£¸£®£¿ £x£²¡Å/£x£¹¡Å <unk> £x£¹£¬¡Å <unk> <unk> </s>
+<s> <unk> £¨£¯£¿ <unk> <unk> <unk> £¦£µ£¿ </s>
+<s> <unk> <unk> <unk> <unk> £¡£º£¾ <unk> <unk> </s>
+<s> <unk> <unk> £x£²¡Å/£x£¹¡Å <unk> <unk> <unk> <unk> £º£¾ <unk> <unk> </s>
+<s> £££¸£µ£¿ <unk> £¡£¸£²£¿ <unk> <unk> <unk> <unk> <unk> <unk> </s>
+<s> £t£¸£¶£¿ <unk> <unk> £¸£¾ <unk> <unk> </s>
+<s> £¨£¯£¿ <unk> <unk> £¢£º£³¡Å £¤£¹£¶¡Å/£¤£¹£¶£¿ </s>
+<s> <unk> <unk> <unk> <unk> <unk> <unk> </s>
+<s> £x£³£¿ <unk> £§£´£½ £x£¹£¬¡Å <unk> <unk> <unk> £¤£¹£«¡Å £x£­£½/£x£­£»/£x£°£¾ £¤£¹£¿ <unk> <unk> </s>
+<s> <unk> £}£­£¿ <unk> £x£¹£¶£¾ </s>
+<s> <unk> <unk> £££¸£´¡Å <unk> </s>
+<s> <unk> <unk> <unk> <unk> <unk> <unk> <unk> £¹£½ £¨£¹£¶¡Å £££¸£³£¿ £~£¹£µ£½ £³¡Å £|£±¡Å £¸£½ £u£¸£¶£½ <unk> <unk> <unk> <unk> £¦£µ¡Å £¡£¸¡Å </s>
+<s> <unk> £³£¿ <unk> <unk> </s>
+<s> <unk> <unk> <unk> <unk> £¡£¸£®£¿ <unk> <unk> £§£¶£½ £x£¯£¿ <unk> <unk> </s>
+<s> <unk> <unk> </s>
+<s> <unk> <unk> <unk> <unk> £¡£¸£½ £¹£¯£¿ £u£¸£³£¿ <unk> <unk> £¡£¸£´¡Å </s>
+<s> £©£¶£½ £§£µ£¿ <unk> £§£´£½ <unk> <unk> £x£¹£¬¡Å £¡£¸£³¡Å </s>
+<s> <unk> <unk> <unk> <unk> £u£¯¡Å <unk> <unk> <unk> </s>
+<s> <unk> <unk> £¸£®£¾ £§£µ£¿ £§£´£½ <unk> £¡£¸£µ¡Å/£¡£¸£µ£¿ <unk> <unk> <unk> <unk> <unk> </s>
+<s> £x£³£¿ <unk> <unk> <unk> £¡£¸£µ¡Å £¥£¹£³£½/£¤£¹£³£¿ £¢£¸£¶¡Å <unk> </s>
+<s> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> <unk> </s>
+<s> <unk> <unk> <unk> £££¸£´¡Å <unk> £¸£¾ <unk> <unk> <unk> <unk> £~£¹£«£¿ <unk> <unk> </s>
+<s> <unk> <unk> <unk> £x£­£» <unk> £¸£®£¿ </s>
+<s> <unk> £¸£¾ <unk> <unk> <unk> </s>
+<s> £x£¹£¬¡Å <unk> <unk> £¦£µ£¿ <unk> £t£¹£¿/£t£¹£½ £x£«£¿ </s>
+<s> £x£³£¿ £¢£º£®£¿ <unk> <unk> <unk> <unk> <unk> <unk> <unk> </s>
+<s> <unk> <unk> <unk> £~£¹£°£¿ £t£¸£¾ <unk> £¦£±£¾ </s>
+<s> £x£³£¿ <unk> <unk> <unk> <unk> <unk> £¤£¶£¿/£¤£¶¡Å £t£³£¾ <unk> £x£­£» <unk> <unk> </s>
+<s> <unk> <unk> <unk> <unk> </s>
+<s> <unk> <unk> £¸£¶£¾ £¦£¿ <unk> </s>
+<s> £¨£¯£¿ <unk> £¦£µ£¿ </s>
+<s> <unk> <unk> <unk> £¤£¹£¾ <unk> <unk> </s>
+<s> <unk> <unk> <unk> <unk> </s>
+<s> £x£³£¿ <unk> £§£¹£½ <unk> <unk> £~£²£¿ </s>
+<s> <unk> <unk> £~£¹£«£¿ <unk> £££¸£«£¿ </s>
+<s> <unk> <unk> <unk> <unk> <unk> £¨£¯£¿ <unk> <unk> £££¸£«£¿ <unk> <unk> </s>
+<s> £º£®£¿ £y£¸£¶¡Å <unk> <unk> <unk> <unk> <unk> £¢£º£³£½ </s>
+<s> <unk> £z£¶£½ <unk> <unk> <unk> </s>
+<s> <unk> <unk> £¸£¶£¾ £¦£¿ <unk> <unk> <unk> </s>
