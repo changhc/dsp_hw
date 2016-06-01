@@ -11,16 +11,20 @@ using namespace std;
 void SegProcess(char*, char*, vector< vector<char> > &table);
 void ExportZhuYin(vector< vector<char> > &table, FILE* file);
 
-int main(){
+int main(int argc, char** argv){
+    if(argc != 3){
+        cerr<<"Input error!\n";
+        exit(-1);
+    }
     char word[10], zhuyin[50], prevword[10] = {0};
     vector< vector<char> > table;
     FILE* file, *filew;
-    file = fopen("Big5-ZhuYin.map", "r");
+    file = fopen(argv[1], "r");
     if(file == NULL) {
         cerr<<"Input file error!\n";
         exit(-1);
     }
-    filew = fopen("ZhuYin-Big5.map", "w");
+    filew = fopen(argv[2], "w");
     while(!feof(file)){
         char *seg, prev[3];
         prev[0] = 0;
