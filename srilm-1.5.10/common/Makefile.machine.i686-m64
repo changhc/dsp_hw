@@ -14,8 +14,8 @@
 
    # Use the GNU C compiler.
    GCC_FLAGS = -march=athlon64 -m64 -Wreturn-type -Wimplicit -Wformat
-   CC = $(GCC_PATH)gcc $(GCC_FLAGS) -Wimplicit-int
-   CXX = $(GCC_PATH)g++ $(GCC_FLAGS) -DINSTANTIATE_TEMPLATES
+   CC = /usr/bin/gcc $(GCC_FLAGS) -Wimplicit-int
+   CXX = /usr/bin/g++ $(GCC_FLAGS) -DINSTANTIATE_TEMPLATES
 
    # Optional compilation flags.
    OPTIMIZE_FLAGS = -g -O3 
@@ -51,7 +51,7 @@
    # Tcl support (standard in Linux)
    TCL_INCLUDE = 
    TCL_LIBRARY =
-   NO_TCL = 1
+   NO_TCL = X
 
    # No ranlib
    RANLIB = :

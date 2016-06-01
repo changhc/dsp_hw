@@ -12,7 +12,7 @@ void SegProcess(char*, char*, vector< vector<char> > &table);
 void ExportZhuYin(vector< vector<char> > &table, FILE* file);
 
 int main(){
-    char word[10], zhuyin[50];
+    char word[10], zhuyin[50], prevword[10] = {0};
     vector< vector<char> > table;
     FILE* file, *filew;
     file = fopen("Big5-ZhuYin.map", "r");
@@ -21,6 +21,9 @@ int main(){
         char *seg, prev[3];
         prev[0] = 0;
         fscanf(file, "%s", word);
+        if(strcmp(word, prevword) == 0) continue;
+        strcpy(prevword, word);
+        fprintf(filew, "%s\t%s\n", word, word);
         fscanf(file, "%s", zhuyin);
         seg = strtok(zhuyin,"/");
         //cout<<seg<<endl;
@@ -87,9 +90,9 @@ void ExportZhuYin(vector< vector<char> > &table, FILE* file){
             fprintf(file, "%c%c ", table[i][j], table[i][j+1]);
         }
         fprintf(file, "\n");
-        for(int j = 2; j < table[i].size(); j += 2){
-            fprintf(file, "%c%c\t%c%c\n", table[i][j], table[i][j+1], table[i][j], table[i][j+1]);
-        }
+        //for(int j = 2; j < table[i].size(); j += 2){
+        //    fprintf(file, "%c%c\t%c%c\n", table[i][j], table[i][j+1], table[i][j], table[i][j+1]);
+        //}
         //delete &table[i];
         //table.pop_back();
         //cout<<table.size()<<endl;
