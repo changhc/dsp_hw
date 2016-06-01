@@ -62,8 +62,11 @@ int main(int argc, char** argv){
 		vector<string> vecWord;
 		seg = strtok(sentence," \n");
         while(seg != NULL){
-            string tmp(seg);
-            vecWord.push_back(tmp);
+        	string tmp(seg);
+        	for(int i = 0; i < tmp.size() - 1; i += 2){
+        		string small_seg = tmp.substr(i, 2);
+        		vecWord.push_back(small_seg);
+        	}
             seg = strtok(NULL," \n");
         }
         VecSentence.push_back(vecWord);

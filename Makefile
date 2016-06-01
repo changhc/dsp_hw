@@ -32,7 +32,7 @@ run:
 	@#TODO How to run your code toward different txt?
 	@for i in $(shell seq 1 10) ; do \
 		echo "Running $$i.txt"; \
-		./mydisambig testdata/$$i\s.txt $(TO) $(LM) 2 > result2/$$i.txt; \
+		./mydisambig testdata/$$i.txt $(TO) $(LM) 2 > result2/$$i.txt; \
 	done;
 map:
 	@#TODO How to map?
