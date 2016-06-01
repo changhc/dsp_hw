@@ -25,7 +25,6 @@ int main(int argc, char** argv){
 	}
 	char *input = argv[1], *map_file = argv[2], *lm_file = argv[3];
 	int Norder = atoi(argv[4]);
-	
 	//char *input = "seg.txt", *map_file = "ZhuYin-Big5.map", *lm_file = "bigram.lm";
 	//int Norder = 2;
 	//load lm
@@ -44,8 +43,6 @@ int main(int argc, char** argv){
 		string key, tmp;
 		char *seg;
 		vector<string> list;
-		//fgets(sentence, 10000, file);
-		//cout<<sentence<<endl;
 		seg = strtok(sentence," \t\n");
 		key.assign(seg);
 		seg = strtok(NULL," \t\n");
@@ -63,18 +60,16 @@ int main(int argc, char** argv){
 	while(fgets(sentence, 10000, file)){
 		char *seg;
 		vector<string> vecWord;
-		//fgets(sentence, 10000, file);
 		seg = strtok(sentence," \n");
         while(seg != NULL){
             string tmp(seg);
             vecWord.push_back(tmp);
             seg = strtok(NULL," \n");
         }
-        //printf("\n");
         VecSentence.push_back(vecWord);
 	}
 	fclose(file);
-	//cout<<VecSentence.size();
+
 	//viterbi
 	for(unsigned int i = 0; i < VecSentence.size(); ++i){
 		vector<string> result;
@@ -112,23 +107,6 @@ double BiProb(string w1, string w2){
 	return lm->wordProb(word2, context);
 }
 
-double TriProb(string w1, string w2, string w3) 
-{
-    VocabIndex wid1 = voc.getIndex(w1.c_str());
-    VocabIndex wid2 = voc.getIndex(w2.c_str());
-    VocabIndex wid3 = voc.getIndex(w3.c_str());
-
-    if(wid1 == Vocab_None)  //OOV
-        wid1 = voc.getIndex(Vocab_Unknown);
-    if(wid2 == Vocab_None)  //OOV
-        wid2 = voc.getIndex(Vocab_Unknown);
-    if(wid3 == Vocab_None)  //OOV
-        wid3 = voc.getIndex(Vocab_Unknown);
-
-    VocabIndex context[] = { wid2, wid1, Vocab_None };
-    return lm.wordProb( wid3, context );
-}
-
 void viterbi(unsigned int num, vector< vector<double> > &delta, vector< vector<string> > &psi){
 	map<string, vector<string> >::iterator iter;
 	char *str;
@@ -145,23 +123,18 @@ void viterbi(unsigned int num, vector< vector<double> > &delta, vector< vector<s
 		double prob = UniProb(word1[i]);
 		delta[0].push_back(prob);
 	}
-	//cout<<VecSentence[num].size()<<endl;
+
 	//loop
 	double prob = 0;
 	for(unsigned int t = 1; t < VecSentence[num].size(); ++t){
 		key = VecSentence[num][t];
 		iter = table.find(key);
 		word2 = (*iter).second;
-		//for(int i = 0; i < word2.size(); ++i){
-		//	cout<<word2[i];
-		//}
+
 		key = VecSentence[num][t-1];
 		iter = table.find(key);
 		word1 = (*iter).second;
-		//for(int i = 0; i < word1.size(); ++i){
-		//	cout<<word1[i];
-		//}
-		//cout<<endl;
+
 		double max;
 		string maxWord;
 		for(unsigned int j = 0; j < word2.size(); ++j){
@@ -185,7 +158,6 @@ void viterbi(unsigned int num, vector< vector<double> > &delta, vector< vector<s
 	key = VecSentence[num][T];
 	iter = table.find(key);
 	word1 = (*iter).second;
-	//cout<<key<<endl;
 	double max = negInf;
 	string maxWord = "\0";
 	for( unsigned int i = 0; i < delta[T].size(); ++i){
