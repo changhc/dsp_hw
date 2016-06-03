@@ -5,7 +5,7 @@ MACHINE_TYPE ?= i686-m64
 LM ?= bigram.lm
 
 CXX = g++
-CXXFLAGS = -O3 -I$(SRIPATH)/include -w
+CXXFLAGS = -O3 -g -I$(SRIPATH)/include -w
 #CXXFLAGS = -g -Wall -I$(SRIPATH)/include -w
 vpath lib%.a $(SRIPATH)/lib/$(MACHINE_TYPE)
 
@@ -30,6 +30,7 @@ $(TARGET2): $(OBJ2) -loolm -ldstruct -lmisc
 	$(CXX) $(CXXFLAGS) -c $<
 run:
 	@#TODO How to run your code toward different txt?
+	@if [! -d "result2" ]; then mkdir result2; fi;
 	@for i in $(shell seq 1 10) ; do \
 		echo "Running $$i.txt"; \
 		./mydisambig testdata/$$i.txt $(TO) $(LM) 2 > result2/$$i.txt; \

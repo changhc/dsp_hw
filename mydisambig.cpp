@@ -15,8 +15,8 @@ static vector< vector<string> > VecSentence;
 static map<string, vector<string> > table;
 static Ngram* lm = NULL;
 static double negInf = -1.0/0.0; 
-void viterbi(unsigned int num, vector< vector<double> > &delta, vector< vector<string> > &psi);
-vector<string> TrackBack(vector< vector<double> > &delta, vector< vector<string> > &psi);
+void viterbi(unsigned int num, vector< vector<double> > &delta, vector< vector<int> > &from);
+vector<string> TrackBack(int num, vector< vector<double> > &delta, vector< vector<int> > &from);
 int main(int argc, char** argv){
 	
 	if(argc != 5){
@@ -25,7 +25,7 @@ int main(int argc, char** argv){
 	}
 	char *input = argv[1], *map_file = argv[2], *lm_file = argv[3];
 	int Norder = atoi(argv[4]);
-	//char *input = "seg.txt", *map_file = "ZhuYin-Big5.map", *lm_file = "bigram.lm";
+	//char *input = "./testdata/1.txt", *map_file = "ZhuYin-Big5.map", *lm_file = "bigram.lm";
 	//int Norder = 2;
 	//load lm
 	
@@ -77,9 +77,9 @@ int main(int argc, char** argv){
 	for(unsigned int i = 0; i < VecSentence.size(); ++i){
 		vector<string> result;
 		vector< vector<double> > delta;
-		vector< vector<string> > psi;
-		viterbi(i, delta, psi);
-		result = TrackBack(delta, psi);
+		vector< vector<int> > from;
+		viterbi(i, delta, from);
+		result = TrackBack(i, delta, from);
 		cout<<"<s> ";
 		for(unsigned int j = 0; j < result.size(); ++j)
 			cout<<result[j]<<' ';
@@ -110,14 +110,13 @@ double BiProb(string w1, string w2){
 	return lm->wordProb(word2, context);
 }
 
-void viterbi(unsigned int num, vector< vector<double> > &delta, vector< vector<string> > &psi){
+void viterbi(unsigned int num, vector< vector<double> > &delta, vector< vector<int> > &from){
 	map<string, vector<string> >::iterator iter;
-	char *str;
 	string key = VecSentence[num][0];
 	vector<string> word1, word2;
 	
 	delta.resize(VecSentence[num].size() + 1);
-    psi.resize(VecSentence[num].size() + 1);
+    from.resize(VecSentence[num].size() + 1);
 
 	//init
 	iter = table.find(key);
@@ -125,6 +124,7 @@ void viterbi(unsigned int num, vector< vector<double> > &delta, vector< vector<s
 	for( unsigned int i = 0; i < word1.size(); ++i){
 		double prob = UniProb(word1[i]);
 		delta[0].push_back(prob);
+		from[0].push_back(-1);
 	}
 
 	//loop
@@ -140,6 +140,7 @@ void viterbi(unsigned int num, vector< vector<double> > &delta, vector< vector<s
 
 		double max;
 		string maxWord;
+		int index;
 		for(unsigned int j = 0; j < word2.size(); ++j){
 			max = negInf;
 			maxWord = "\0";
@@ -148,11 +149,11 @@ void viterbi(unsigned int num, vector< vector<double> > &delta, vector< vector<s
 				prob = delta[t - 1][i] + aij;
 				if(prob > max){
 					max = prob; 
-					maxWord = word1[i];
+					index = i;
 				}
 			}
 			delta[t].push_back(max);
-			psi[t].push_back(maxWord);
+			from[t].push_back(index);
 		}
 	}
 	
@@ -162,29 +163,38 @@ void viterbi(unsigned int num, vector< vector<double> > &delta, vector< vector<s
 	iter = table.find(key);
 	word1 = (*iter).second;
 	double max = negInf;
-	string maxWord = "\0";
+	string s = "</s>";
+	int index;
 	for( unsigned int i = 0; i < delta[T].size(); ++i){
-		if(delta[T][i] > max){
-			max = delta[T][i];
-			maxWord = word1[i];
-		}
+		delta[T][i] += BiProb(word1[i], s);
 	}
-	delta[T + 1].push_back(max);
-	psi[T + 1].push_back(maxWord);
 }
 
-vector<string> TrackBack(vector< vector<double> > &delta, vector< vector<string> > &psi){
+vector<string> TrackBack(int num, vector< vector<double> > &delta, vector< vector<int> > &from){
 	vector<string> result;
-	for(unsigned int t = delta.size() - 1; t > 0; --t){
-		double max = negInf;
-		string maxWord = "\0";
-		for(unsigned int i = 0; i < delta[t].size(); ++i){
-			if(delta[t][i] > max){
-				max = delta[t][i];
-				maxWord = psi[t][i];
-			}
+	double max = negInf;
+	map<string, vector<string> >::iterator iter;
+	string key = VecSentence[num][0];
+	vector<string> word1, word2;
+	
+	int T = VecSentence[num].size() - 1, index;
+	key = VecSentence[num][T];
+	iter = table.find(key);
+	word1 = (*iter).second;
+	for(unsigned int i = 0; i < delta[T].size(); ++i){
+		if(delta[T][i] > max){
+			max = delta[T][i];
+			index = i;
 		}
-		result.push_back(maxWord);
+	}
+	result.push_back(word1[index]);
+	index = from[T][index];
+	for(int t = T - 1; t >= 0; --t){
+		key = VecSentence[num][t];
+		iter = table.find(key);
+		word1 = (*iter).second; 
+		result.push_back(word1[index]);
+		index = from[t][index];
 	}
 	reverse(result.begin(), result.end());
 	return result;
